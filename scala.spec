@@ -18,7 +18,7 @@
 
 Name:           %{?scl_prefix}scala
 Version:        2.10.6
-Release:        2.2%{?dist}
+Release:        2.3%{?dist}
 Summary:        A hybrid functional/object-oriented language for the JVM
 BuildArch:      noarch
 # License was confirmed to be standard BSD by fedora-legal
@@ -80,13 +80,12 @@ BuildRequires:  %{?scl_prefix_java_common}jpackage-utils
 BuildRequires:  %{?scl_prefix}scala
 %endif
 
+Requires:       java-headless >= 1:1.7.0
+Requires:       %{?scl_prefix}runtime
 Requires:       %{?scl_prefix_java_common}jansi
 Requires:       %{?scl_prefix_java_common}jline >= 2.10
 
-%{?filter_setup:
-%filter_from_requires /ant/d;
-%filter_setup
-}
+AutoReqProv:    no
 
 %description
 Scala is a general purpose programming language designed to express common
@@ -96,6 +95,7 @@ fully interoperable with Java.
 
 %package apidoc
 Summary:        Documentation for the Scala programming language
+Requires:       %{?scl_prefix}runtime
 
 %description apidoc
 Scala is a general purpose programming language for the JVM that blends
@@ -105,7 +105,7 @@ reference and API documentation for the Scala programming language.
 %package swing
 Summary:        The swing library for the scala programming languages
 Requires:       %{?scl_prefix}scala = %{version}-%{release}
-Requires:       %{?scl_prefix}java >= 1:1.7.0
+Requires:       java >= 1:1.7.0
 
 %description swing
 This package contains the swing library for the scala programming languages. This library is required to develope GUI-releate applications in scala. The release provided by this package
@@ -113,7 +113,8 @@ is not the original version from upstream because this version is not compatible
 
 %package -n %{?scl_prefix}ant-scala
 Summary:        Development files for Scala
-Requires:       %{?scl_prefix}scala = %{version}-%{release}, %{?scl_prefix}ant
+Requires:       %{?scl_prefix}scala = %{version}-%{release}
+Requires:       %{?scl_prefix_java_common}ant
 
 %description -n %{?scl_prefix}ant-scala
 Scala is a general purpose programming language for the JVM that blends
@@ -295,8 +296,8 @@ done
 ln -s $(abs2rel %{jline2_jar} %{scaladir}/lib) $RPM_BUILD_ROOT%{scaladir}/lib
 ln -s $(abs2rel %{jansi_jar} %{scaladir}/lib) $RPM_BUILD_ROOT%{scaladir}/lib
 
-install -d $RPM_BUILD_ROOT%{_sysconfdir}/ant.d
-install -p -m 644 %{SOURCE24} $RPM_BUILD_ROOT%{_sysconfdir}/ant.d/scala
+install -d $RPM_BUILD_ROOT%{_sysconfdir_java_common}/ant.d
+install -p -m 644 %{SOURCE24} $RPM_BUILD_ROOT%{_sysconfdir_java_common}/ant.d/scala
 
 %if 0
 cp -pr docs/examples $RPM_BUILD_ROOT%{_datadir}/scala/
@@ -308,7 +309,7 @@ install -p -m 644 %{SOURCE21} %{SOURCE22} $RPM_BUILD_ROOT%{_datadir}/mime-info/
 install -d $RPM_BUILD_ROOT%{_datadir}/mime/packages/
 install -p -m 644 %{SOURCE23} $RPM_BUILD_ROOT%{_datadir}/mime/packages/
 
-sed -i -e 's,@JAVADIR@,%{_javadir},g' -e 's,@DATADIR@,%{_datadir},g' $RPM_BUILD_ROOT%{_bindir}/*
+sed -i -e 's,@JAVADIR@,%{_javadir_java_common},g' -e 's,@DATADIR@,%{_datadir},g' $RPM_BUILD_ROOT%{_bindir}/*
 
 install -d $RPM_BUILD_ROOT%{_mandir}/man1
 install -p -m 644 build/scaladoc/manual/man/man1/* $RPM_BUILD_ROOT%{_mandir}/man1
@@ -353,7 +354,7 @@ update-mime-database %{?fedora:-n} %{_datadir}/mime &> /dev/null || :
 %files -n %{?scl_prefix}ant-scala
 # Following is plain config because the ant task classpath could change from
 # release to release
-%config %{_sysconfdir}/ant.d/*
+%config %{_sysconfdir_java_common}/ant.d/*
 %doc docs/LICENSE
 
 %files apidoc
@@ -372,6 +373,11 @@ update-mime-database %{?fedora:-n} %{_datadir}/mime &> /dev/null || :
 %endif
 
 %changelog
+* Mon Jan 16 2017 Mikolaj Izdebski <mizdebsk@redhat.com> - 2.10.6-2.3
+- Update requires
+- Install ant.d config file to correct directory in rh-java-common
+- Use correct JAVADIR in bindir scripts
+
 * Mon Jan  9 2017 Mikolaj Izdebski <mizdebsk@redhat.com> - 2.10.6-2.2
 - Non-bootstrap build
 
