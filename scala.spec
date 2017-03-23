@@ -9,7 +9,7 @@
 %global scaladir %{_datadir}/scala
 
 %global want_jdk8 1
-%global bootstrap_build 1
+%global bootstrap_build 0
 
 %global scl_maven rh-maven33
 %global scl_prefix_maven %{scl_maven}-
@@ -18,7 +18,7 @@
 
 Name:           %{?scl_prefix}scala
 Version:        2.10.6
-Release:        2.1%{?dist}
+Release:        2.2%{?dist}
 Summary:        A hybrid functional/object-oriented language for the JVM
 BuildArch:      noarch
 # License was confirmed to be standard BSD by fedora-legal
@@ -372,6 +372,9 @@ update-mime-database %{?fedora:-n} %{_datadir}/mime &> /dev/null || :
 %endif
 
 %changelog
+* Mon Jan  9 2017 Mikolaj Izdebski <mizdebsk@redhat.com> - 2.10.6-2.2
+- Non-bootstrap build
+
 * Thu Jan  5 2017 Mikolaj Izdebski <mizdebsk@redhat.com> - 2.10.6-2.1
 - Bootstrap build for rh-scala210
 
