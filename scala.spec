@@ -18,7 +18,7 @@
 
 Name:           %{?scl_prefix}scala
 Version:        2.10.6
-Release:        2.3%{?dist}
+Release:        2.4%{?dist}
 Summary:        A hybrid functional/object-oriented language for the JVM
 BuildArch:      noarch
 # License was confirmed to be standard BSD by fedora-legal
@@ -306,26 +306,12 @@ cp -pr docs/examples $RPM_BUILD_ROOT%{_datadir}/scala/
 install -d $RPM_BUILD_ROOT%{_datadir}/mime-info
 install -p -m 644 %{SOURCE21} %{SOURCE22} $RPM_BUILD_ROOT%{_datadir}/mime-info/
 
-install -d $RPM_BUILD_ROOT%{_datadir}/mime/packages/
-install -p -m 644 %{SOURCE23} $RPM_BUILD_ROOT%{_datadir}/mime/packages/
-
 sed -i -e 's,@JAVADIR@,%{_javadir_java_common},g' -e 's,@DATADIR@,%{_datadir},g' $RPM_BUILD_ROOT%{_bindir}/*
 
 install -d $RPM_BUILD_ROOT%{_mandir}/man1
 install -p -m 644 build/scaladoc/manual/man/man1/* $RPM_BUILD_ROOT%{_mandir}/man1
 
 %{?scl:EOF}
-
-%post
-touch --no-create %{_datadir}/mime/packages &> /dev/null || :
-
-%postun
-if [ $1 -eq 0 ]; then
-update-mime-database %{_datadir}/mime &> /dev/null || :
-fi
-
-%posttrans
-update-mime-database %{?fedora:-n} %{_datadir}/mime &> /dev/null || :
 
 %files -f .mfiles
 %{_bindir}/*
@@ -335,13 +321,13 @@ update-mime-database %{?fedora:-n} %{_datadir}/mime &> /dev/null || :
 %{_javadir}/%{pkg_name}/%{pkg_name}-reflect.jar
 %{_javadir}/%{pkg_name}/scalap.jar
 %dir %{_datadir}/%{pkg_name}
+%dir %{_datadir}/%{pkg_name}/lib
 %{_datadir}/%{pkg_name}/lib/j*.jar
 %{_datadir}/%{pkg_name}/lib/%{pkg_name}-compiler.jar
 %{_datadir}/%{pkg_name}/lib/%{pkg_name}-library.jar
 %{_datadir}/%{pkg_name}/lib/%{pkg_name}-reflect.jar
 %{_datadir}/%{pkg_name}/lib/scalap.jar
 %{_datadir}/mime-info/*
-%{_datadir}/mime/packages/*
 %{_mandir}/man1/*
 %doc docs/LICENSE
 
@@ -373,6 +359,10 @@ update-mime-database %{?fedora:-n} %{_datadir}/mime &> /dev/null || :
 %endif
 
 %changelog
+* Fri Mar 17 2017 Michael Simacek <msimacek@redhat.com> - 2.10.6-2.4
+- Fix unowned lib directory
+- Remove mime database entry - scala mime entry is in base RHEL already
+
 * Mon Jan 16 2017 Mikolaj Izdebski <mizdebsk@redhat.com> - 2.10.6-2.3
 - Update requires
 - Install ant.d config file to correct directory in rh-java-common
